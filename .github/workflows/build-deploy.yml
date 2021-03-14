@@ -22,31 +22,31 @@ jobs:
     - name: Build & Publish
       run: |
         PROJECT_ID=$(gcloud config list --format 'value(core.account)' | sed 's/.*@\(.*\)\.iam\.gserviceaccount.*/\1/')
-        docker build -t gcr.io/${PROJECT_ID}/${{xia.service-name}} .
-        docker push gcr.io/${PROJECT_ID}/${{xia.service-name}}
+        docker build -t gcr.io/${PROJECT_ID}/xia-merger .
+        docker push gcr.io/${PROJECT_ID}/xia-merger
 
     - name: User Creation
       continue-on-error: true
       run: |
         PROJECT_ID=$(gcloud config list --format 'value(core.account)' | sed 's/.*@\(.*\)\.iam\.gserviceaccount.*/\1/')
-        gcloud iam service-accounts create ${{xia.sa-name}} --project ${PROJECT_ID}
+        gcloud iam service-accounts create gcr-xia-merger --project ${PROJECT_ID}
 
     - name: Role Assign
       run: |
         PROJECT_ID=$(gcloud config list --format 'value(core.account)' | sed 's/.*@\(.*\)\.iam\.gserviceaccount.*/\1/')
         gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-        --member=serviceAccount:${{xia.sa-name}}@${PROJECT_ID}.iam.gserviceaccount.com \
+        --member=serviceAccount:gcr-xia-merger@${PROJECT_ID}.iam.gserviceaccount.com \
         --role=roles/logging.logWriter
         gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-        --member=serviceAccount:${{xia.sa-name}}@${PROJECT_ID}.iam.gserviceaccount.com \
-        --role=roles/${{xia.db-role}}
+        --member=serviceAccount:gcr-xia-merger@${PROJECT_ID}.iam.gserviceaccount.com \
+        --role=roles/datastore.user
 
     - name: Deploy
       run: |
         PROJECT_ID=$(gcloud config list --format 'value(core.account)' | sed 's/.*@\(.*\)\.iam\.gserviceaccount.*/\1/')
-        gcloud run deploy ${{xia.service-name}} --image gcr.io/${PROJECT_ID}/${{xia.service-name}} \
+        gcloud run deploy xia-merger --image gcr.io/${PROJECT_ID}/xia-merger \
         --project ${PROJECT_ID} \
-        --service-account ${{xia.sa-name}}@${PROJECT_ID}.iam.gserviceaccount.com \
+        --service-account gcr-xia-merger@${PROJECT_ID}.iam.gserviceaccount.com \
         --region europe-west1 \
         --platform managed \
         --allow-unauthenticated \

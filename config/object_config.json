@@ -1,0 +1,14 @@
+{
+    "_class": "Merger",
+    "_module": "pyinsight",
+    "depositor": {
+        "_type": "object",
+        "_class": "FirestoreDepositor",
+        "_module": "xialib_firestore",
+        "db": {
+            "_type": "global",
+            "_name": "firestore"
+        }
+    },
+    "_type": "object"
+}

@@ -1,0 +1,7 @@
+{
+    "firestore": {
+        "_type": "object",
+        "_class": "Client",
+        "_module": "google.cloud.firestore"
+    }
+}
